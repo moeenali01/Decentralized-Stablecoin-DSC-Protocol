@@ -50,10 +50,10 @@ pragma solidity 0.8.20;
  *                           burning privileges over this token. When users deposit collateral,
  *                           DSCEngine mints DSC to them; when they repay, it burns DSC.
  */
-import { OracleLib, AggregatorV3Interface } from "./libraries/OracleLib.sol";
-import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { DecentralizedStableCoin } from "./DecentralizedStableCoin.sol";
+import {OracleLib, AggregatorV3Interface} from "./libraries/OracleLib.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {DecentralizedStableCoin} from "./DecentralizedStableCoin.sol";
 
 /**
  * @title DSCEngine
@@ -95,7 +95,6 @@ contract DSCEngine is ReentrancyGuard {
      *      Naming convention: ContractName__ErrorDescription
      *      This makes it easy to trace which contract threw the error in a complex system.
      */
-
     /// @dev Thrown in constructor if tokenAddresses[] and priceFeedAddresses[] have different lengths.
     ///      These arrays must be parallel (index 0 of tokens maps to index 0 of feeds).
     error DSCEngine__TokenAddressesAndPriceFeedAddressesAmountsDontMatch();
@@ -395,9 +394,7 @@ contract DSCEngine is ReentrancyGuard {
         address tokenCollateralAddress,
         uint256 amountCollateral,
         uint256 amountDscToMint
-    )
-        external
-    {
+    ) external {
         depositCollateral(tokenCollateralAddress, amountCollateral);
         mintDsc(amountDscToMint);
     }
@@ -413,11 +410,7 @@ contract DSCEngine is ReentrancyGuard {
      *      Order matters: burning debt first makes it more likely the health factor check passes.
      *      The health factor is checked AFTER both operations to ensure the user remains solvent.
      */
-    function redeemCollateralForDsc(
-        address tokenCollateralAddress,
-        uint256 amountCollateral,
-        uint256 amountDscToBurn
-    )
+    function redeemCollateralForDsc(address tokenCollateralAddress, uint256 amountCollateral, uint256 amountDscToBurn)
         external
         moreThanZero(amountCollateral)
         isAllowedToken(tokenCollateralAddress)
@@ -438,10 +431,7 @@ contract DSCEngine is ReentrancyGuard {
      *      The health factor check at the end enforces this — if removing collateral
      *      drops the health factor below 1.0, the entire transaction reverts.
      */
-    function redeemCollateral(
-        address tokenCollateralAddress,
-        uint256 amountCollateral
-    )
+    function redeemCollateral(address tokenCollateralAddress, uint256 amountCollateral)
         external
         moreThanZero(amountCollateral)
         nonReentrant
@@ -492,11 +482,7 @@ contract DSCEngine is ReentrancyGuard {
      *
      * @dev The protocol assumes ~150% average collateralization for liquidations to be profitable.
      */
-    function liquidate(
-        address collateral,
-        address user,
-        uint256 debtToCover
-    )
+    function liquidate(address collateral, address user, uint256 debtToCover)
         external
         isAllowedToken(collateral)
         moreThanZero(debtToCover)
@@ -594,10 +580,7 @@ contract DSCEngine is ReentrancyGuard {
      *      CEI prevents reentrancy exploits: even if the external token contract tries to
      *      re-enter this function during transferFrom, the state is already updated correctly.
      */
-    function depositCollateral(
-        address tokenCollateralAddress,
-        uint256 amountCollateral
-    )
+    function depositCollateral(address tokenCollateralAddress, uint256 amountCollateral)
         public
         moreThanZero(amountCollateral)
         nonReentrant
@@ -642,12 +625,7 @@ contract DSCEngine is ReentrancyGuard {
      *
      * @dev Follows CEI: state update → event → external transfer
      */
-    function _redeemCollateral(
-        address tokenCollateralAddress,
-        uint256 amountCollateral,
-        address from,
-        address to
-    )
+    function _redeemCollateral(address tokenCollateralAddress, uint256 amountCollateral, address from, address to)
         private
     {
         // EFFECT: Decrease the depositor's balance (auto-reverts on underflow in Solidity 0.8+)
@@ -787,10 +765,7 @@ contract DSCEngine is ReentrancyGuard {
      *        Step 1: $10,000 × 50/100 = $5,000 (adjusted collateral)
      *        Step 2: ($5,000 × 1e18) / $4,000 = 1.25e18 (health factor = 1.25, safe)
      */
-    function _calculateHealthFactor(
-        uint256 totalDscMinted,
-        uint256 collateralValueInUsd
-    )
+    function _calculateHealthFactor(uint256 totalDscMinted, uint256 collateralValueInUsd)
         internal
         pure
         returns (uint256)
@@ -841,10 +816,7 @@ contract DSCEngine is ReentrancyGuard {
      */
 
     /// @notice Public wrapper for _calculateHealthFactor. Useful for off-chain simulations.
-    function calculateHealthFactor(
-        uint256 totalDscMinted,
-        uint256 collateralValueInUsd
-    )
+    function calculateHealthFactor(uint256 totalDscMinted, uint256 collateralValueInUsd)
         external
         pure
         returns (uint256)

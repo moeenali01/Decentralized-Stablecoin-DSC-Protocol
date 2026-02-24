@@ -26,6 +26,7 @@ import {DSCEngine} from "../../src/DSCEngine.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC20Mock} from "../../test/mocks/ERC20Mock.sol";
+
 /*//////////////////////////////////////////////////////////////
             FAIL ON REVERT HANDLER (ALLOWS REVERTS)
 //////////////////////////////////////////////////////////////*/
@@ -157,7 +158,7 @@ contract FailOnRevertInvariants is StdInvariant, Test {
     function setUp() public {
         DeployDSC deployer = new DeployDSC();
         (dsc, dscEngine, helperconfig) = deployer.run();
-        (, , weth, wbtc, ) = helperconfig.activeNetworkConfig();
+        (,, weth, wbtc,) = helperconfig.activeNetworkConfig();
         handler = new FailOnRevertHandler(dsc, dscEngine);
         targetContract(address(handler));
     }
