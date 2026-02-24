@@ -7,9 +7,6 @@ on:
   pull_request:
   workflow_dispatch:
 
-env:
-  FOUNDRY_PROFILE: ci
-
 jobs:
   check:
     name: Foundry project
@@ -34,5 +31,8 @@ jobs:
       - name: Run Forge build
         run: forge build --sizes
 
-      - name: Run Forge tests
-        run: forge test -vvv
+      - name: Run Forge tests (fail_on_revert = true, excludes FailOnRevert)
+        run: forge test --no-match-contract FailOnRevert -vvv
+
+      - name: Run FailOnRevert invariant tests (fail_on_revert = false)
+        run: FOUNDRY_PROFILE=loose forge test --match-contract FailOnRevert -vvv
